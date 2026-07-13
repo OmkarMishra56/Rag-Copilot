@@ -1,5 +1,3 @@
-import json
-
 from fastapi import APIRouter, Depends
 from sse_starlette.sse import EventSourceResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -49,6 +47,7 @@ async def query(
     )
 
     async def event_generator():
+        import json
         full_answer = []
         yield {"event": "sources", "data": json.dumps(sources)}
         async for token in stream:
