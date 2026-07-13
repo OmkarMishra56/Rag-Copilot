@@ -1,0 +1,17 @@
+[
+  {
+    "question": "What is the refund policy for annual subscriptions?",
+    "relevant_filenames": ["refund_policy.pdf", "billing_faq.md"],
+    "expected_answer": "Annual subscriptions are refundable within 30 days of purchase, prorated after that."
+  },
+  {
+    "question": "How do I authenticate against the public API?",
+    "relevant_filenames": ["api_documentation.md"],
+    "expected_answer": "Use a Bearer token obtained from the /auth/login endpoint in the Authorization header."
+  },
+  {
+    "question": "What changed in the latest release?",
+    "relevant_filenames": ["release_notes_v2.md"],
+    "expected_answer": "Summarize the latest version's changes from the release notes document."
+  }
+]
