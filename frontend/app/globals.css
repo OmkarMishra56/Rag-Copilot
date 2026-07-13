@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #0b0f14;
+  color: #e6ebf1;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+::selection {
+  background: #4fd1c5;
+  color: #0b0f14;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #1e2630;
+  border-radius: 4px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+.cursor-blink {
+  animation: blink 1s step-start infinite;
+}
+
+.prose-copilot p { margin: 0 0 0.75em 0; }
+.prose-copilot ul, .prose-copilot ol { margin: 0 0 0.75em 1.25em; }
+.prose-copilot code { background: #1a2029; padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.85em; }
+.prose-copilot pre { background: #0f141a; border: 1px solid #1e2630; border-radius: 8px; padding: 0.9em; overflow-x: auto; }
