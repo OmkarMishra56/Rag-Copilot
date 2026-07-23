@@ -10,7 +10,7 @@ context compression, conversation memory, and a streaming full-stack app — not
 single-file PDF chatbot.
 
 **Live demo:** _add your deployed link here_
-**Repo:** _add your GitHub link here_
+**Repo:** https://github.com/OmkarMishra56/Rag-Copilot
 
 ---
 
@@ -136,8 +136,8 @@ flowchart LR
 ## Running it locally
 
 ```bash
-git clone <repo> && cd rag-copilot
-cp backend/.env.example backend/.env   # add your OPENAI_API_KEY
+git clone https://github.com/OmkarMishra56/Rag-Copilot && cd rag-copilot
+cp backend/.env.example backend/.env  
 docker compose up --build
 ```
 
