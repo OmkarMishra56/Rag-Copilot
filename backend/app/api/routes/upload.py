@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,8 +18,8 @@ settings = get_settings()
 @router.post("", response_model=list[DocumentUploadResponse], dependencies=[Depends(enforce_rate_limit)])
 async def upload_documents(
     files: list[UploadFile],
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user: Annotated[User, Depends(get_current_user)],
 ):
     if not files:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="No files provided")

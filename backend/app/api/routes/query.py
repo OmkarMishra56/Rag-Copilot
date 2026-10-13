@@ -1,6 +1,8 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
-from sse_starlette.sse import EventSourceResponse
 from sqlalchemy.ext.asyncio import AsyncSession
+from sse_starlette.sse import EventSourceResponse
 
 from app.api.deps import enforce_rate_limit, get_current_user
 from app.config import get_settings
@@ -20,8 +22,8 @@ settings = get_settings()
 @router.post("", dependencies=[Depends(enforce_rate_limit)])
 async def query(
     payload: QueryRequest,
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user: Annotated[User, Depends(get_current_user)],
 ):
     chat_repo = ChatRepository(db)
     msg_repo = MessageRepository(db)

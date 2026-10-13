@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,8 +15,8 @@ router = APIRouter(prefix="/search", tags=["search"])
 @router.post("", response_model=SearchResponse, dependencies=[Depends(enforce_rate_limit)])
 async def search(
     payload: SearchRequest,
-    db: AsyncSession = Depends(get_db),
-    _: User = Depends(get_current_user),
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[User, Depends(get_current_user)],
 ):
     candidates = await hybrid_retrieve(db, payload.query, filters=payload.filters)
     top = candidates[: payload.top_k]

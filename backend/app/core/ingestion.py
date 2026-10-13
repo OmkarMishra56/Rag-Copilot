@@ -93,7 +93,7 @@ async def ingest_document(
         document.doc_metadata = {**loaded.metadata, "num_chunks": len(pieces)}
         logger.info("document_indexed", document_id=str(document.id), chunks=len(pieces), filename=filename)
 
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         await doc_repo.update_status(document.id, DocumentStatus.FAILED.value)
         logger.error("document_ingestion_failed", document_id=str(document.id), error=str(exc))
         raise

@@ -1,4 +1,5 @@
 import uuid
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,7 +14,10 @@ router = APIRouter(prefix="/history", tags=["history"])
 
 
 @router.get("", response_model=list[ChatOut])
-async def list_chats(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+async def list_chats(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user: Annotated[User, Depends(get_current_user)],
+):
     repo = ChatRepository(db)
     chats = await repo.list_for_user(user.id)
     return [ChatOut.model_validate(c) for c in chats]
@@ -21,7 +25,9 @@ async def list_chats(db: AsyncSession = Depends(get_db), user: User = Depends(ge
 
 @router.get("/{chat_id}", response_model=ChatHistoryOut)
 async def get_chat_history(
-    chat_id: uuid.UUID, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)
+    chat_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user: Annotated[User, Depends(get_current_user)],
 ):
     chat_repo = ChatRepository(db)
     msg_repo = MessageRepository(db)

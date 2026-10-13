@@ -1,4 +1,5 @@
 import uuid
+from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
@@ -17,7 +18,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.api_prefix}/auth/login
 
 
 async def get_current_user(
-    token: str | None = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
+    db: Annotated[AsyncSession, Depends(get_db)],
+    token: str | None = Depends(oauth2_scheme),
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,7 +44,7 @@ async def get_current_user(
 
 
 def require_role(*allowed_roles: Role):
-    async def checker(user: User = Depends(get_current_user)) -> User:
+    async def checker(user: Annotated[User, Depends(get_current_user)]) -> User:
         if user.role not in [r.value for r in allowed_roles]:
             raise HTTPException(status.HTTP_403_FORBIDDEN, detail="Insufficient permissions")
         return user

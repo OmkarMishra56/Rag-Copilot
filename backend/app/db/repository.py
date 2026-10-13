@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,12 +31,12 @@ class ChatRepository:
         chat = await self.get(chat_id)
         if chat:
             chat.summary = summary
-            chat.updated_at = datetime.utcnow()
+            chat.updated_at = datetime.now(UTC)
 
     async def touch(self, chat_id: uuid.UUID) -> None:
         chat = await self.get(chat_id)
         if chat:
-            chat.updated_at = datetime.utcnow()
+            chat.updated_at = datetime.now(UTC)
 
 
 class MessageRepository:

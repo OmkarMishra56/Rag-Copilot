@@ -1,4 +1,5 @@
 import uuid
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,15 +13,16 @@ from app.db.repository import DocumentRepository
 from app.schemas.document import DocumentOut
 
 router = APIRouter(prefix="/documents", tags=["documents"])
+admin_user_dependency = require_role(Role.ADMIN)
 
 
 @router.get("", response_model=list[DocumentOut])
 async def list_documents(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[User, Depends(get_current_user)],
     limit: int = 50,
     offset: int = 0,
     source_type: str | None = None,
-    db: AsyncSession = Depends(get_db),
-    _: User = Depends(get_current_user),
 ):
     repo = DocumentRepository(db)
     docs = await repo.list_all(limit=limit, offset=offset, source_type=source_type)
@@ -28,7 +30,11 @@ async def list_documents(
 
 
 @router.get("/{document_id}", response_model=DocumentOut)
-async def get_document(document_id: uuid.UUID, db: AsyncSession = Depends(get_db), _: User = Depends(get_current_user)):
+async def get_document(
+    document_id: uuid.UUID,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[User, Depends(get_current_user)],
+):
     repo = DocumentRepository(db)
     doc = await repo.get(document_id)
     if not doc:
@@ -39,8 +45,8 @@ async def get_document(document_id: uuid.UUID, db: AsyncSession = Depends(get_db
 @router.delete("/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_document(
     document_id: uuid.UUID,
-    db: AsyncSession = Depends(get_db),
-    _: User = Depends(require_role(Role.ADMIN)),
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _: Annotated[User, Depends(admin_user_dependency)],
 ):
     repo = DocumentRepository(db)
     doc = await repo.get(document_id)

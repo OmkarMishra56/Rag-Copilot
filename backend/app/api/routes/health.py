@@ -1,16 +1,18 @@
 import time
+from typing import Annotated
 
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Depends, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
 
 from app.cache.redis_client import get_redis
 from app.core import vectorstore
 from app.db.database import get_db
+from app.utils.logging import get_logger
 
 router = APIRouter(tags=["system"])
+logger = get_logger(__name__)
 
 REQUEST_COUNT = Counter("rag_requests_total", "Total requests", ["endpoint", "status"])
 REQUEST_LATENCY = Histogram("rag_request_latency_seconds", "Request latency", ["endpoint"])
@@ -18,26 +20,26 @@ QUERY_LATENCY = Histogram("rag_query_latency_seconds", "End-to-end RAG query lat
 
 
 @router.get("/health")
-async def health(db: AsyncSession = Depends(get_db)):
+async def health(db: Annotated[AsyncSession, Depends(get_db)]):
     checks = {"postgres": False, "redis": False, "qdrant": False}
 
     try:
         await db.execute(text("SELECT 1"))
         checks["postgres"] = True
-    except Exception:  # noqa: BLE001
-        pass
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("health_check_postgres_failed", error=str(exc))
 
     try:
         await get_redis().ping()
         checks["redis"] = True
-    except Exception:  # noqa: BLE001
-        pass
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("health_check_redis_failed", error=str(exc))
 
     try:
         await vectorstore._client.get_collections()
         checks["qdrant"] = True
-    except Exception:  # noqa: BLE001
-        pass
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("health_check_qdrant_failed", error=str(exc))
 
     healthy = all(checks.values())
     return Response(
